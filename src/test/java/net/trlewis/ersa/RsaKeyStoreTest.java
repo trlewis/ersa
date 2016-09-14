@@ -14,6 +14,8 @@ public class RsaKeyStoreTest {
 //		fail("Not yet implemented");
 //	}
 	
+	//MY KEYS
+	
 	@Test
 	public void createNewMyKeys() {
 		//only testing the return value of the method here.
@@ -133,6 +135,8 @@ public class RsaKeyStoreTest {
 		assertTrue("should contain name", names.contains("up"));
 	}
 	
+	//TODO: test for invalid key name containing SEPERATOR character (my and other)
+	
 	//OTHER KEYS
 	
 	@Test
@@ -219,4 +223,6 @@ public class RsaKeyStoreTest {
 		PublicKey pk = ks.getOtherKey("other remain");
 		assertNotNull("should still be there", pk);
 	}
+
+	//TODO: test for invalid key name containing SEPERATOR character (my and other)
 }
