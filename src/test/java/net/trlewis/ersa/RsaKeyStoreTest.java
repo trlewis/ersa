@@ -27,6 +27,11 @@ public class RsaKeyStoreTest {
 	}
 	
 	@Test
+	public void createNewMyKeyIllegalCharacter() {
+		fail("Not yet implemented");
+	}
+	
+	@Test
 	public void createNewMyKeyDuplicateName() {
 		RsaKeyStore ks = new RsaKeyStore();
 		assertTrue("should have created key", ks.createNewMyKeyPair("same"));

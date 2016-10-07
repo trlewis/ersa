@@ -31,7 +31,7 @@ public class RsaKeyStore  {
 	 * @param password The password used to encrypt/decrypt the keystore
 	 */
 	public RsaKeyStore(final String fileName, final String password) throws InvalidKeyException {
-		//TODO: read file...
+		//TODO: delete this, just use the reader class
 	}
 	
 	public boolean createNewMyKeyPair(final String name) {
