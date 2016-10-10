@@ -14,23 +14,63 @@ public class RsaKeyStoreTest {
 //		fail("Not yet implemented");
 //	}
 	
-	//MY KEYS
+	//////////////////////////////////
+	//MY KEYS	
+	//////////////////////////////////
+
+	@Test
+	public void addNullMyKeyPair() {
+		RsaKeyStore ks = new RsaKeyStore();
+		KeyPair kp = null;
+		boolean r1 = ks.addMyKeyPair("some valid name", kp);
+		assertFalse("Should not have added the keypair: null keypair", r1);
+	}
+	
+	@Test
+	public void addMyKeyPairNullName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		KeyPair kp = RsaHelper.generateKeyPair();
+		boolean r1 = ks.addMyKeyPair(null, kp);
+		assertFalse("Should not have added the keypair: null name", r1);
+	}
+	
+	@Test
+	public void addMyKeyPairEmptyName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		KeyPair kp = RsaHelper.generateKeyPair();
+		boolean r = ks.addMyKeyPair("", kp);
+		assertFalse("Should not have added the keypair: empty name", r);
+	}
+	
+	@Test
+	public void addMyKeyPairInvalidName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		KeyPair kp = RsaHelper.generateKeyPair();
+		boolean r = ks.addMyKeyPair("invalid~tilde", kp);
+		assertFalse("Should not have added the keypair: invalid name", r);
+	}
+	
+	@Test
+	public void addMyKeyPairDuplicateName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		KeyPair kp = RsaHelper.generateKeyPair();
+		KeyPair kpp = RsaHelper.generateKeyPair();
+		boolean r = ks.addMyKeyPair("dupe name blah", kp);
+		boolean rr = ks.addMyKeyPair("dupe name blah", kpp);
+		assertTrue("Should have added first keypair", r);
+		assertFalse("Should not have added second keypair: duplicate name", rr);
+	}
 	
 	@Test
 	public void createNewMyKeys() {
 		//only testing the return value of the method here.
 		RsaKeyStore ks = new RsaKeyStore();
 		boolean r1 = ks.createNewMyKeyPair("newkp");
-		boolean r2 =ks.createNewMyKeyPair("newtwo");
+		boolean r2 = ks.createNewMyKeyPair("newtwo");
 		assertTrue("Should have added the key", r1);
 		assertTrue("Should have added the second key", r2);
 	}
-	
-	@Test
-	public void createNewMyKeyIllegalCharacter() {
-		fail("Not yet implemented");
-	}
-	
+
 	@Test
 	public void createNewMyKeyDuplicateName() {
 		RsaKeyStore ks = new RsaKeyStore();
@@ -39,14 +79,25 @@ public class RsaKeyStoreTest {
 	}
 	
 	@Test
-	public void createNoNameKey() {
+	public void createNewMyKeyEmptyName() {
 		//should require a name
 		RsaKeyStore ks = new RsaKeyStore();
 		boolean re = ks.createNewMyKeyPair("");
-		assertFalse("Should not have created blank name keypair", re);
-		
-		boolean rn = ks.createNewMyKeyPair(null);
-		assertFalse("Should not have created null name keypair", rn);
+		assertFalse("Should not have created new my keypair: empty name", re);
+	}	
+	@Test
+	public void createNewMyKeyInvalidName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		boolean r = ks.createNewMyKeyPair("invalid~name~because~~tilde");
+		assertFalse("Should not have created keypair: invalid name", r);
+		//fail("Not yet implemented");
+	}
+	
+	@Test
+	public void createNewMyKeyNullName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		boolean re = ks.createNewMyKeyPair(null);
+		assertFalse("Should not have created new my keypair: null name", re);
 	}
 	
 	@Test
@@ -75,7 +126,7 @@ public class RsaKeyStoreTest {
 	}
 	
 	@Test
-	public void removeMyKeyNoName() {
+	public void removeMyKeyNullName() {
 		//don't provide a name for the key to remove
 		RsaKeyStore ks = new RsaKeyStore();
 		ks.createNewMyKeyPair("first");
@@ -140,9 +191,9 @@ public class RsaKeyStoreTest {
 		assertTrue("should contain name", names.contains("up"));
 	}
 	
-	//TODO: test for invalid key name containing SEPERATOR character (my and other)
-	
+	//////////////////////////////////
 	//OTHER KEYS
+	//////////////////////////////////
 	
 	@Test
 	public void addOtherKeys() {
@@ -160,6 +211,14 @@ public class RsaKeyStoreTest {
 		assertTrue("should have added other key", ks.addOtherKey("sameOther", kp.getPublic()));
 		KeyPair kpp = RsaHelper.generateKeyPair();
 		assertFalse("should not have added other key", ks.addOtherKey("sameOther", kpp.getPublic()));
+	}
+	
+	@Test
+	public void addOtherKeyInvalidName() {
+		RsaKeyStore ks = new RsaKeyStore();
+		KeyPair kp = RsaHelper.generateKeyPair();
+		boolean r = ks.addOtherKey("bad~tilde~chars", kp.getPublic());
+		assertFalse("Should not have added other key: invalid name", r);
 	}
 
 	@Test
@@ -229,5 +288,4 @@ public class RsaKeyStoreTest {
 		assertNotNull("should still be there", pk);
 	}
 
-	//TODO: test for invalid key name containing SEPERATOR character (my and other)
 }

@@ -1,6 +1,5 @@
 package net.trlewis.ersa;
 
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.HashMap;
@@ -24,30 +23,25 @@ public class RsaKeyStore  {
 	private Map<String, PublicKey> myOtherKeys = new HashMap<String, PublicKey>();
 	
 	public RsaKeyStore() {}
-	
-	/**
-	 * Parses the given key string and fills the KeyStore
-	 * @param keyString A string representation of the key store previously retrieved from toString()
-	 * @param password The password used to encrypt/decrypt the keystore
-	 */
-	public RsaKeyStore(final String fileName, final String password) throws InvalidKeyException {
-		//TODO: delete this, just use the reader class
+
+	/////////////////////////////
+	// PUBLIC METHODS
+	/////////////////////////////
+		
+	public boolean addOtherKey(final String name, final PublicKey key) {
+		if(key == null || !isValidKeyName(name) || this.myOtherKeys.containsKey(name))
+			return false;
+
+		this.myOtherKeys.put(name, key);
+		return true;
 	}
 	
 	public boolean createNewMyKeyPair(final String name) {
-		if(name == null || name.isEmpty() || this.myKeys.containsKey(name))
+		if(!isValidKeyName(name) || this.myKeys.containsKey(name))
 			return false;
 
 		KeyPair kp = RsaHelper.generateKeyPair();
 		this.myKeys.put(name, kp);
-		return true;
-	}
-		
-	public boolean addOtherKey(final String name, final PublicKey key) {
-		if(key == null || name == null || name.isEmpty() || this.myOtherKeys.containsKey(name))
-			return false;
-
-		this.myOtherKeys.put(name, key);
 		return true;
 	}
 	
@@ -56,10 +50,17 @@ public class RsaKeyStore  {
 	}
 	
 	public KeyPair getMyKeyPair(final String name) {
-		if(name == null || name.isEmpty() || !this.myKeys.containsKey(name))
+		if(!isValidKeyName(name) || !this.myKeys.containsKey(name))
 			return null;
 
 		return this.myKeys.get(name);
+	}
+	
+	public PublicKey getOtherKey(final String name) {
+		if(name == null || name.isEmpty() || !this.myOtherKeys.containsKey(name))
+			return null;
+
+		return this.myOtherKeys.get(name);
 	}
 	 
 	public Set<String> getOtherKeyNames() {
@@ -67,27 +68,43 @@ public class RsaKeyStore  {
 	}
 	
 	public void removeMyKey(final String name) {
-		if(name == null || name.isEmpty() || !this.myKeys.containsKey(name))
+		if(!isValidKeyName(name) || !this.myKeys.containsKey(name))
 			return;
 
 		this.myKeys.remove(name);
 	}
 		
 	public void removeOtherKey(final String name) {
-		if(name == null || name.isEmpty() || !this.myOtherKeys.containsKey(name))
+		if(!isValidKeyName(name) || !this.myOtherKeys.containsKey(name))
 			return;
 
 		this.myOtherKeys.remove(name);
 	}
-	
-	/**
-	 * @param name
-	 * @return
-	 */
-	public PublicKey getOtherKey(final String name) {
-		if(name == null || name.isEmpty() || !this.myOtherKeys.containsKey(name))
-			return null;
 
-		return this.myOtherKeys.get(name);
+	/////////////////////////////
+	// PROTECTED METHODS
+	/////////////////////////////
+
+	protected boolean addMyKeyPair(final String name, final KeyPair kp) {
+		//currently i only want RsaKeyStoreReader to be calling this, which is why it's protected
+		if(kp == null || !isValidKeyName(name) || this.myKeys.containsKey(name))
+			return false;
+
+		this.myKeys.put(name, kp);
+		return true;
+	}
+	
+	/////////////////////////////
+	// PRIVATE METHODS
+	/////////////////////////////
+	
+	private static boolean isValidKeyName(final String name) {
+		//this just checks if the name is of the valid format. that is: non-null, not empty,
+		//and does not contain illegal characters
+		if(name == null || name.isEmpty())
+			return false;
+		
+		boolean hasTilde = name.indexOf('~') >= 0;
+		return !hasTilde;
 	}
 }
