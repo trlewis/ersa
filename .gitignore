@@ -1,3 +1,7 @@
+# IntelliJ IDEA stuff
+*.iml
+.idea/
+
 # eclipse stuff
 .classpath
 .project

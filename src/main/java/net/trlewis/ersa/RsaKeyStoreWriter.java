@@ -10,7 +10,7 @@ public class RsaKeyStoreWriter {
 		//string sections: 1) check value 2) my keys 3) other keys
 		StringBuilder sb = new StringBuilder();
 		sb.append(RsaKeyStore.CHECK_VALUE);
-		sb.append('\n');
+		sb.append("\n");
 		sb.append("~~~~~ BEGIN MY KEYS ~~~~~\n");
 		sb.append(getMyKeysSection(keyStore));
 		sb.append("~~~~~ END MY KEYS ~~~~~\n");

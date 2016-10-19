@@ -44,14 +44,25 @@ public class RsaKeyStoreReader {
 	private static RsaKeyStore parseKeyStoreString(String dataStr) throws ParseException, InvalidKeySpecException {
 		String[] lines = dataStr.split("\n");
 		int ln = 0;
-		if(lines[ln++] != RsaKeyStore.CHECK_VALUE)
+        if(!lines[ln].equals(RsaKeyStore.CHECK_VALUE)) {
+			System.out.println(lines[ln]);
+			System.out.println(RsaKeyStore.CHECK_VALUE);
+			char[] linechars = lines[ln].toCharArray();
+			char[] checkchars = RsaKeyStore.CHECK_VALUE.toCharArray();
+			System.out.println("line len: " + linechars.length + " check len: " + checkchars.length);
+			for(int i = 0; i < linechars.length; i++) {
+				if(linechars[i] != checkchars[i])
+					System.out.println("mismatching chars at position " + i + " line: " + linechars[i] + " check: " + checkchars[i]);
+			}
 			throw new ParseException("Check value did not match", 0);
-		if(lines[ln++] != "~~~~~ BEGIN MY KEYS ~~~~~")
+		}
+		ln++;
+        if(!lines[ln++].equals("~~~~~ BEGIN MY KEYS ~~~~~"))
 			throw new ParseException("Expected section delimiter not found", RsaKeyStore.CHECK_VALUE.length());
 		
 		//as long as the output of RsaKeyStoreWriter never changes then we should be good for the rest of the lines... yeah...
 		RsaKeyStore ks = new RsaKeyStore();
-		while(lines[ln] != "~~~~~ END MY KEYS ~~~~~") {
+        while(!lines[ln].equals("~~~~~ END MY KEYS ~~~~~")) {
 			String[] kcom = lines[ln].split("~"); //name~public~private
 			PublicKey pub = RsaHelper.convertBase36ToPublic(kcom[1]);
 			PrivateKey priv = RsaHelper.convertBase36ToPrivate(kcom[2]);
@@ -59,15 +70,16 @@ public class RsaKeyStoreReader {
 			ks.addMyKeyPair(kcom[0], kp);
 			ln++;
 		}
+		ln++;
 		
-		if(lines[ln++] != "~~~~~ BEGIN OTHER KEYS ~~~~~") {
+        if(!lines[ln++].equals("~~~~~ BEGIN OTHER KEYS ~~~~~")) {
 			int pos = RsaKeyStore.CHECK_VALUE.length();
 			for(int i = 1; i < ln - 1; i++) 
 				pos += lines[i].length();
 			throw new ParseException("Expected section delimiter not found", pos);
 		}
 		
-		while(lines[ln] != "~~~~~ END OTHER KEYS ~~~~~") {
+        while(!lines[ln].equals("~~~~~ END OTHER KEYS ~~~~~")) {
 			String[] kcom = lines[ln].split("~");
 			PublicKey pub = RsaHelper.convertBase36ToPublic(kcom[1]);
 			ks.addOtherKey(kcom[0], pub);
