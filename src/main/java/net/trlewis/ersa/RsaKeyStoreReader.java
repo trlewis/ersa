@@ -44,19 +44,8 @@ public class RsaKeyStoreReader {
 	private static RsaKeyStore parseKeyStoreString(String dataStr) throws ParseException, InvalidKeySpecException {
 		String[] lines = dataStr.split("\n");
 		int ln = 0;
-        if(!lines[ln].equals(RsaKeyStore.CHECK_VALUE)) {
-			System.out.println(lines[ln]);
-			System.out.println(RsaKeyStore.CHECK_VALUE);
-			char[] linechars = lines[ln].toCharArray();
-			char[] checkchars = RsaKeyStore.CHECK_VALUE.toCharArray();
-			System.out.println("line len: " + linechars.length + " check len: " + checkchars.length);
-			for(int i = 0; i < linechars.length; i++) {
-				if(linechars[i] != checkchars[i])
-					System.out.println("mismatching chars at position " + i + " line: " + linechars[i] + " check: " + checkchars[i]);
-			}
+        if(!lines[ln++].equals(RsaKeyStore.CHECK_VALUE))
 			throw new ParseException("Check value did not match", 0);
-		}
-		ln++;
         if(!lines[ln++].equals("~~~~~ BEGIN MY KEYS ~~~~~"))
 			throw new ParseException("Expected section delimiter not found", RsaKeyStore.CHECK_VALUE.length());
 		

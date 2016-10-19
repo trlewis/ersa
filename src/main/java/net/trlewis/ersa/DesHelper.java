@@ -10,8 +10,6 @@ import java.util.Arrays;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.*;
 
-
-
 public class DesHelper {
 	private static final String _privateSalt = "a395gj3;;SO9sgn4n:s2n~~2903nv=e0eeesfSODIN";
 	
@@ -22,11 +20,8 @@ public class DesHelper {
 		byte[] cyphertext = null;
 		try {
 			cyphertext = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
-		} catch (IllegalBlockSizeException e) {
-			// I don't think this would ever happen
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// this either...
+		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			// I don't think these exceptions should ever happen...
 			e.printStackTrace();
 		}
 		
@@ -49,16 +44,10 @@ public class DesHelper {
 		
 		try {
 			cipher = Cipher.getInstance("DES");
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException e1) {
-			// this method is only called from inside this class,
-			// these exceptions should never occur
-			e1.printStackTrace();
-		}
-
-		try {
 			cipher.init(mode, key);
-		} catch (InvalidKeyException e) {
-			// this method is only called from inside this class, this exception shouldn't occur
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+			/* this method is only called from inside this class,
+            these exceptions should never occur */
 			e.printStackTrace();
 		}
 
