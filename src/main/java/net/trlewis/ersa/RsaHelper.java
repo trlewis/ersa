@@ -41,30 +41,29 @@ public class RsaHelper {
 	
 	public static String decryptMessage(final byte[] messageBytes, final PrivateKey key) throws InvalidKeyException {
 		Cipher cipher = getRsaCipher(Cipher.DECRYPT_MODE, key);
-		byte[] decryptedBytes = null;
+		byte[] decryptedBytes;
 		try {
 			decryptedBytes = cipher.doFinal(messageBytes);
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			e.printStackTrace();
+			throw new InvalidKeyException("Invalid decryption key");
 		}
-		String decryptedMessage = new String(decryptedBytes, StandardCharsets.UTF_8);
-		return decryptedMessage;
+		return new String(decryptedBytes, StandardCharsets.UTF_8);
 	}
 	
 	public static byte[] encryptMessage(final String message, final PublicKey key) throws InvalidKeyException {
 		Cipher cipher = getRsaCipher(Cipher.ENCRYPT_MODE, key);
 		
-		byte[] encryptedBytes = null;
+		byte[] encryptedBytes;
 		try {
 			encryptedBytes = cipher.doFinal(message.getBytes(StandardCharsets.UTF_8));
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
-			e.printStackTrace();
+            throw new InvalidKeyException("Invalid encryption key");
 		}
 		return encryptedBytes;
 	}
 	
 	public static KeyPair generateKeyPair() {
-		KeyPairGenerator gen = null;
+		KeyPairGenerator gen;
 		try {
 			gen = KeyPairGenerator.getInstance("RSA");
 		} catch (Exception e) {
@@ -74,16 +73,14 @@ public class RsaHelper {
 
 		//gen.initialize(2048);
 		gen.initialize(1024);
-		KeyPair keys = gen.generateKeyPair();
-		return keys;
+		return gen.generateKeyPair();
 	}
 
 	//PRIVATE METHODS
 
 	private static byte[] getBase36BigIntBytes(final String base36) {
 		BigInteger bigint = new BigInteger(base36, 36);
-		byte[] intBytes = bigint.toByteArray();
-		return intBytes;
+		return bigint.toByteArray();
 	}
 	
 	private static Cipher getRsaCipher(final int mode, final Key key) throws InvalidKeyException {
@@ -94,7 +91,7 @@ public class RsaHelper {
 			// this shouldn't ever happen.
 			e.printStackTrace();
 		}
-		
+
 		cipher.init(mode, key);
 		return cipher;
 	}

@@ -7,6 +7,8 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 public class DesHelperTest {
+
+    //region Password tests
     @Test
     public void decryptWithGoodPassword() {
         String testStr = "here's my test string wow12321~-=";
@@ -35,4 +37,17 @@ public class DesHelperTest {
 
         assertTrue("Incorrect password should generate exception", exceptionEncountered);
     }
+
+    //endregion Password tests
+
+    //region text tests
+
+    @Test
+    public void nullTextEncrypt()
+    {
+        byte[] encrypted = DesHelper.getEncryptedBytes(null, "open sesame");
+        assertNull("There was nothing to encrypt", encrypted);
+    }
+
+    //endregion text tests
 }

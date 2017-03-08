@@ -17,23 +17,21 @@ public class DesHelper {
 		SecretKey key = generateSecretKey(password);
 		Cipher cipher = getDesCipher(Cipher.ENCRYPT_MODE, key);
 		
-		byte[] cyphertext = null;
+		byte[] cypherText = null;
 		try {
-			cyphertext = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
-		} catch (IllegalBlockSizeException | BadPaddingException e) {
+			cypherText = cipher.doFinal(text.getBytes(StandardCharsets.UTF_8));
+		} catch (Exception e){
 			// I don't think these exceptions should ever happen...
 			e.printStackTrace();
 		}
 		
-		return cyphertext;
+		return cypherText;
 	}
 	
 	public static String getDecryptedString(final byte[] encryptedBytes, final String password) throws IllegalBlockSizeException, BadPaddingException {
 		SecretKey key = generateSecretKey(password);
 		Cipher cipher = getDesCipher(Cipher.DECRYPT_MODE, key);
-				
 		byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
-		
 		return new String(decryptedBytes, StandardCharsets.UTF_8);
 	}
 	
@@ -45,47 +43,40 @@ public class DesHelper {
 		try {
 			cipher = Cipher.getInstance("DES");
 			cipher.init(mode, key);
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-			/* this method is only called from inside this class,
-            these exceptions should never occur */
-			e.printStackTrace();
-		}
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ignored) { }
 
 		return cipher;
 	}
 	
 	private static SecretKey generateSecretKey(final String password) {
-		
-		SecretKeyFactory factory = null;
+		SecretKeyFactory factory;
 		try {
 			factory = SecretKeyFactory.getInstance("DES");
 		} catch (NoSuchAlgorithmException e) {
 			// shouldn't ever happen
 			e.printStackTrace();
+			return null;
 		}
-		
+
 		byte[] key = (password + _privateSalt).getBytes(StandardCharsets.UTF_8);
-		MessageDigest sha = null;
 		try {
-			sha = MessageDigest.getInstance("SHA-1");
-			key = sha.digest(key);
-			//key = Arrays.copyOf(key, 32);//use only first 256 bits
-			key = Arrays.copyOf(key, 16);//256 not available without "Java Cryptography Extension"
-		} catch (NoSuchAlgorithmException e1) {
+			MessageDigest sha = MessageDigest.getInstance("SHA-1");
+            //256 bit not available without "Java Cryptography Extension"
+            key = Arrays.copyOf(sha.digest(key), 16);
+		} catch (NoSuchAlgorithmException e) {
 			// shouldn't ever happen
-			e1.printStackTrace();
+			e.printStackTrace();
+			return null;
 		}
-				
-		SecretKeySpec keyspec = new SecretKeySpec(key, "DES");
-		SecretKey tmp = null;
+
+		SecretKeySpec keySpec = new SecretKeySpec(key, "DES");
+		SecretKey secret = null;
 		try {
-			tmp = factory.generateSecret(keyspec);
-		} catch (InvalidKeySpecException e) {
-			// also shouldn't ever happen
+            secret = factory.generateSecret(keySpec);
+		} catch (InvalidKeySpecException|NullPointerException e) {
 			e.printStackTrace();
 		}
 		
-		SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "DES");
-		return secret;
+        return secret;
 	}
 }

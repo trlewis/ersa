@@ -52,14 +52,12 @@ public class RsaKeyStore  {
 	public KeyPair getMyKeyPair(final String name) {
 		if(!isValidKeyName(name) || !this.myKeys.containsKey(name))
 			return null;
-
 		return this.myKeys.get(name);
 	}
 	
 	public PublicKey getOtherKey(final String name) {
 		if(name == null || name.isEmpty() || !this.myOtherKeys.containsKey(name))
 			return null;
-
 		return this.myOtherKeys.get(name);
 	}
 	 
@@ -70,14 +68,12 @@ public class RsaKeyStore  {
 	public void removeMyKey(final String name) {
 		if(!isValidKeyName(name) || !this.myKeys.containsKey(name))
 			return;
-
 		this.myKeys.remove(name);
 	}
 		
 	public void removeOtherKey(final String name) {
 		if(!isValidKeyName(name) || !this.myOtherKeys.containsKey(name))
 			return;
-
 		this.myOtherKeys.remove(name);
 	}
 
